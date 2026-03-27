@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DevAuto — Automação & Desenvolvimento Web</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #13120F;
+      --bg2:      #1A1916;
+      --bg3:      #201F1B;
+      --border:   rgba(255,255,255,0.07);
+      --border2:  rgba(255,255,255,0.12);
+      --txt:      #E8E4DC;
+      --muted:    #7A7870;
+      --muted2:   #5A5854;
+      --gold:     #D4A843;
+      --gold2:    #F0C060;
+      --teal:     #3ECFB2;
+      --white:    #F5F2EC;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* subtle texture overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.5;
+    }
+
+    /* TYPE */
+    .serif { font-family: 'Fraunces', serif; }
+    .label {
+      font-size: 0.67rem;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .label::before {
+      content: '';
+      width: 20px; height: 1px;
+      background: var(--gold);
+      opacity: 0.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.6rem 3.5rem;
+      transition: background 0.4s, border-color 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(19,18,15,0.92);
+      backdrop-filter: blur(20px);
+      border-color: var(--border);
+    }
+    .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-logo sup { font-size: 0.55em; color: var(--gold); vertical-align: super; }
+    .nav-links { display: flex; gap: 2.5rem; }
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--txt); }
+    .btn-cta {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--bg);
+      background: var(--gold2);
+      border: none; border-radius: 6px;
+      padding: 0.6rem 1.4rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-cta:hover { background: var(--gold); transform: translateY(-1px); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 5rem;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 9rem 3.5rem 5rem;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 2rem;
+    }
+    .badge-dot { width: 7px; height: 7px; background: var(--teal); border-radius: 50%; animation: pulse 2.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.8)} }
+
+    h1.hero-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.8rem, 5.2vw, 5rem);
+      font-weight: 300;
+      line-height: 1.06;
+      color: var(--white);
+      letter-spacing: -0.025em;
+      margin-bottom: 1.6rem;
+    }
+    h1.hero-title .gold { color: var(--gold2); font-style: italic; }
+    h1.hero-title .line-accent {
+      position: relative;
+      display: inline-block;
+    }
+    h1.hero-title .line-accent::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), transparent);
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 460px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--gold2);
+      color: var(--bg);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.85rem 1.8rem;
+      border-radius: 6px;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(212,168,67,0.3);
+    }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent;
+      color: var(--txt);
+      font-size: 0.85rem;
+      font-weight: 400;
+      padding: 0.85rem 1.8rem;
+      border-radius: 6px;
+      text-decoration: none;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
+
+    .hero-stats {
+      display: flex; gap: 0;
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat { padding-right: 2.5rem; border-right: 1px solid var(--border); margin-right: 2.5rem; }
+    .stat:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+    .stat-n {
+      font-family: 'Fraunces', serif;
+      font-size: 2.4rem;
+      font-weight: 300;
+      color: var(--gold2);
+      line-height: 1;
+    }
+    .stat-l { font-size: 0.73rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* Hero card */
+    .hero-right { display: flex; flex-direction: column; gap: 1rem; }
+    .hero-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.6rem;
+      transition: border-color 0.2s;
+    }
+    .hero-card:hover { border-color: var(--border2); }
+    .hcard-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+    .hcard-icon {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: rgba(212,168,67,0.10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .hcard-badge {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.22rem 0.65rem; border-radius: 4px;
+      background: rgba(62,207,178,0.12); color: var(--teal);
+    }
+    .hcard-badge.gold { background: rgba(212,168,67,0.12); color: var(--gold2); }
+    .hero-card h4 { font-size: 0.92rem; font-weight: 600; color: var(--white); margin-bottom: 0.3rem; }
+    .hero-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+    .hcard-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 1.1rem; overflow: hidden; }
+    .hcard-bar-fill { height: 100%; border-radius: 2px; background: var(--teal); width: 78%; animation: barGrow 1.5s ease-out 0.5s both; }
+    .hcard-bar-fill.gold { background: var(--gold2); width: 92%; }
+    @keyframes barGrow { from{width:0} }
+    .hcard-meta { font-size: 0.7rem; color: var(--muted2); margin-top: 0.5rem; }
+
+    /* MARQUEE */
+    .marquee-wrap {
+      overflow: hidden;
+      padding: 1.1rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+    }
+    .marquee-track {
+      display: flex; white-space: nowrap;
+      animation: marquee 25s linear infinite;
+    }
+    .marquee-item {
+      display: flex; align-items: center; gap: 0.8rem;
+      padding: 0 2rem;
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted2);
+    }
+    .marquee-dot { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+    @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* SECTIONS */
+    .section { max-width: 1200px; margin: 0 auto; padding: 6rem 3.5rem; }
+    hr.div { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* SERVICES */
+    .svc-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; flex-wrap: wrap; gap: 1.5rem; }
+    .svc-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-top: 0.8rem;
+    }
+    .svc-title em { font-style: italic; color: var(--gold2); }
+
+    .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+    .svc-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: border-color 0.25s, background 0.25s, transform 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .svc-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .svc-card:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-3px); }
+    .svc-card:hover::before { transform: scaleX(1); }
+
+    /* highlight card */
+    .svc-card.highlight {
+      border-color: rgba(212,168,67,0.25);
+      background: linear-gradient(135deg, #1E1C16 0%, #1A1916 100%);
+    }
+    .svc-card.highlight::before { transform: scaleX(1); background: linear-gradient(90deg, var(--gold2), var(--teal)); }
+
+    .svc-icon-wrap {
+      width: 42px; height: 42px;
+      border-radius: 9px;
+      background: rgba(212,168,67,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      margin-bottom: 1.3rem;
+    }
+    .svc-card h3 { font-size: 0.97rem; font-weight: 600; color: var(--white); margin-bottom: 0.55rem; }
+    .svc-card p { font-size: 0.83rem; color: var(--muted); line-height: 1.72; margin-bottom: 1.3rem; }
+    .svc-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-size: 0.65rem; font-weight: 500;
+      padding: 0.2rem 0.7rem; border-radius: 4px;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .svc-card.highlight .tag { background: rgba(212,168,67,0.08); color: var(--gold); border-color: rgba(212,168,67,0.15); }
+    .new-badge {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: rgba(212,168,67,0.15);
+      color: var(--gold2);
+      padding: 0.18rem 0.6rem; border-radius: 4px;
+      border: 1px solid rgba(212,168,67,0.2);
+    }
+
+    /* PORTFOLIO */
+    .port-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 3.5rem; }
+    .port-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .port-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border2);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    }
+    .port-thumb {
+      height: 170px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.6rem;
+      position: relative; overflow: hidden;
+    }
+    .port-overlay {
+      position: absolute; inset: 0;
+      background: rgba(212,168,67,0.88);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+      color: var(--bg); opacity: 0; transition: opacity 0.2s;
+    }
+    .port-card:hover .port-overlay { opacity: 1; }
+    .port-body { padding: 1.3rem; }
+    .port-cat {
+      font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 0.4rem;
+    }
+    .port-body h3 { font-size: 0.92rem; font-weight: 600; color: var(--white); margin-bottom: 0.3rem; }
+    .port-body p { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+
+    /* PROCESS */
+    .proc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 3.5rem; }
+    .proc-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 1.3rem;
+      align-items: start;
+      transition: border-color 0.2s;
+    }
+    .proc-card:hover { border-color: var(--border2); }
+    .proc-n {
+      font-family: 'Fraunces', serif;
+      font-size: 1.8rem; font-weight: 300;
+      color: rgba(212,168,67,0.25);
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .proc-card:hover .proc-n { color: var(--gold); }
+    .proc-card h3 { font-size: 0.95rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+    .proc-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.72; }
+
+    /* TESTIMONIALS */
+    .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 3.5rem; }
+    .testi-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.8rem;
+    }
+    .testi-stars { color: var(--gold); font-size: 0.75rem; letter-spacing: 2px; margin-bottom: 1rem; }
+    .testi-card blockquote {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--txt);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+    .testi-author { display: flex; align-items: center; gap: 0.75rem; }
+    .testi-avi {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(212,168,67,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 600; color: var(--gold2);
+    }
+    .testi-name { font-size: 0.82rem; font-weight: 600; color: var(--white); }
+    .testi-role { font-size: 0.7rem; color: var(--muted); }
+
+    /* CONTACT */
+    #contato {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+    }
+    .contact-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 6rem 3.5rem;
+      display: grid; grid-template-columns: 1fr 1.1fr; gap: 7rem; align-items: start;
+    }
+    .contact-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1.15;
+      margin: 1rem 0 1.5rem;
+    }
+    .contact-title em { font-style: italic; color: var(--gold2); }
+    .contact-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.85; margin-bottom: 2.5rem; }
+    .cinfo { display: flex; align-items: center; gap: 0.75rem; font-size: 0.83rem; color: var(--muted); margin-bottom: 0.7rem; }
+    .cinfo-icon { color: var(--teal); font-size: 0.9rem; }
+    .avail-box {
+      margin-top: 2rem;
+      border: 1px solid rgba(212,168,67,0.2);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      background: rgba(212,168,67,0.04);
+    }
+    .avail-lbl { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+    .avail-main { font-size: 0.97rem; font-weight: 500; color: var(--white); }
+    .avail-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
+
+    /* Form */
+    .fgroup { margin-bottom: 1.1rem; }
+    .flabel { display: block; font-size: 0.68rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted2); margin-bottom: 0.45rem; }
+    .finput, .fselect, .ftextarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--txt);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem; font-weight: 300;
+      padding: 0.82rem 1rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .finput:focus, .fselect:focus, .ftextarea:focus {
+      border-color: rgba(212,168,67,0.5);
+      background: rgba(255,255,255,0.06);
+    }
+    .finput::placeholder { color: var(--muted2); }
+    .ftextarea { resize: vertical; min-height: 120px; }
+    .fselect option { background: var(--bg2); }
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn-send {
+      width: 100%; margin-top: 0.5rem;
+      background: var(--gold2);
+      color: var(--bg);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem; font-weight: 600;
+      padding: 0.92rem;
+      border: none; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-send:hover {
+      background: var(--gold);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(212,168,67,0.25);
+    }
+    #fSuccess {
+      display: none; margin-top: 1rem;
+      border: 1px solid rgba(62,207,178,0.25);
+      background: rgba(62,207,178,0.07);
+      border-radius: 8px; padding: 0.85rem 1rem;
+      font-size: 0.8rem; color: var(--teal); font-weight: 500;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #0D0C0A;
+      padding: 2rem 3.5rem;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .foot-logo { font-family: 'Fraunces', serif; font-size: 1.1rem; color: var(--muted2); }
+    footer p { font-size: 0.72rem; color: var(--muted2); }
+    .foot-links { display: flex; gap: 1.8rem; }
+    .foot-links a { font-size: 0.72rem; color: var(--muted2); text-decoration: none; transition: color 0.2s; }
+    .foot-links a:hover { color: var(--txt); }
+
+    /* ANIMATE */
+    .fade { opacity: 0; transform: translateY(22px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade.in { opacity: 1; transform: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 960px) {
+      #hero { grid-template-columns: 1fr; gap: 2.5rem; padding: 8rem 1.8rem 4rem; }
+      .svc-grid, .port-grid, .testi-grid { grid-template-columns: 1fr; }
+      .proc-grid { grid-template-columns: 1fr; }
+      .contact-inner { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.8rem; }
+      .frow { grid-template-columns: 1fr; }
+      nav { padding: 1.2rem 1.8rem; }
+      .nav-links { display: none; }
+      .section { padding: 4.5rem 1.8rem; }
+    }
+
+    /* ===== MODAL ===== */
+    .modal-backdrop {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-backdrop.open { display: flex; animation: fadeIn 0.22s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    .modal-box {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      width: 100%; max-width: 720px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.28s cubic-bezier(0.34,1.2,0.64,1);
+    }
+    @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:none;opacity:1} }
+
+    .modal-hero {
+      height: 190px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+      border-radius: 17px 17px 0 0;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(0,0,0,0.4); border: 1px solid var(--border2);
+      color: var(--muted); font-size: 1rem; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+
+    .modal-content { padding: 2rem 2.2rem 2.4rem; }
+    .modal-cat {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--teal); margin-bottom: 0.5rem;
+    }
+    .modal-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.7rem; font-weight: 300;
+      color: var(--white); margin-bottom: 0.7rem; line-height: 1.15;
+    }
+    .modal-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.85; margin-bottom: 1.6rem; }
+
+    .modal-metrics {
+      display: flex; gap: 1rem; margin-bottom: 1.8rem; flex-wrap: wrap;
+    }
+    .modal-metric {
+      flex: 1; min-width: 120px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.2rem;
+    }
+    .modal-metric-n {
+      font-family: 'Fraunces', serif;
+      font-size: 1.8rem; font-weight: 300; color: var(--gold2); line-height: 1;
+    }
+    .modal-metric-l { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; }
+
+    .modal-stack { margin-bottom: 1.8rem; }
+    .modal-stack-title {
+      font-size: 0.67rem; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted2); margin-bottom: 0.7rem;
+    }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .modal-tag {
+      font-size: 0.72rem; font-weight: 500;
+      padding: 0.3rem 0.8rem; border-radius: 5px;
+      background: rgba(212,168,67,0.08);
+      color: var(--gold); border: 1px solid rgba(212,168,67,0.15);
+    }
+
+    .modal-features { margin-bottom: 1.8rem; }
+    .modal-features-title {
+      font-size: 0.67rem; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted2); margin-bottom: 0.9rem;
+    }
+    .modal-feature-item {
+      display: flex; align-items: flex-start; gap: 0.7rem;
+      font-size: 0.85rem; color: var(--muted); margin-bottom: 0.55rem; line-height: 1.6;
+    }
+    .modal-feature-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--teal); flex-shrink: 0; margin-top: 0.45rem;
+    }
+
+    .modal-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .modal-btn-github {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border2);
+      color: var(--txt); font-size: 0.82rem; font-weight: 500;
+      padding: 0.7rem 1.3rem; border-radius: 7px;
+      text-decoration: none; transition: background 0.2s, color 0.2s;
+    }
+    .modal-btn-github:hover { background: rgba(255,255,255,0.11); color: var(--white); }
+    .modal-btn-contact {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--gold2); color: var(--bg);
+      font-size: 0.82rem; font-weight: 600;
+      padding: 0.7rem 1.3rem; border-radius: 7px;
+      text-decoration: none; transition: background 0.2s;
+      border: none; cursor: pointer;
+    }
+    .modal-btn-contact:hover { background: var(--gold); }
+
+    /* port-card clickable cursor */
+    .port-card { cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Gabriel-Dev03<sup>®</sup></a>
+  <div class="nav-links">
+    <a href="#servicos">Serviços</a>
+    <a href="#portfolio">Portfólio</a>
+    <a href="#processo">Como funciona</a>
+    <a href="#depoimentos">Clientes</a>
+  </div>
+  <a href="#contato" class="btn-cta">Falar comigo →</a>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <div>
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Aceitando projetos · Abril 2025
+    </div>
+
+    <h1 class="hero-title">
+      Automação e<br/>
+      <span class="gold">presença digital</span><br/>
+      para o seu negócio
+    </h1>
+
+    <p class="hero-desc">
+      Scripts Python, bots, APIs e sites que trabalham por você. Do e-commerce ao restaurante da esquina — entrego soluções que economizam tempo e geram resultado.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#contato" class="btn-primary">Começar projeto →</a>
+      <a href="#portfolio" class="btn-ghost">Ver portfólio</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-n">40+</div>
+        <div class="stat-l">Projetos entregues</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">3×</div>
+        <div class="stat-l">Ganho de produtividade</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">95%</div>
+        <div class="stat-l">Clientes satisfeitos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-card">
+      <div class="hcard-top">
+        <div class="hcard-icon">🗂️</div>
+        <span class="hcard-badge">Automação ativa</span>
+      </div>
+      <h4>Robô de Relatórios</h4>
+      <p>200+ arquivos gerados e enviados por e-mail todo dia, sem intervenção humana.</p>
+      <div class="hcard-bar"><div class="hcard-bar-fill"></div></div>
+      <div class="hcard-meta">Economia: 3h de trabalho manual por dia</div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hcard-top">
+        <div class="hcard-icon">🌐</div>
+        <span class="hcard-badge gold">Site no ar</span>
+      </div>
+      <h4>Página para Restaurante</h4>
+      <p>Site com cardápio, localização e link para reserva — entregue em 5 dias.</p>
+      <div class="hcard-bar"><div class="hcard-bar-fill gold"></div></div>
+      <div class="hcard-meta">Conversão: +92% de cliques para o WhatsApp</div>
+    </div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="marquee-dot"></span>Python</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>FastAPI</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Web Scraping</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Django</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Sites para Marcas</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Bots & Integrações</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Dashboards</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Automação de Processos</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>APIs REST</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>PostgreSQL</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Streamlit</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Python</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>FastAPI</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Web Scraping</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Django</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Sites para Marcas</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Bots & Integrações</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Dashboards</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Automação de Processos</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>APIs REST</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>PostgreSQL</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Streamlit</span>
+  </div>
+</div>
+
+<!-- SERVIÇOS -->
+<hr class="div"/>
+<div class="section fade" id="servicos">
+  <div class="svc-header">
+    <div>
+      <div class="label">01 — O que faço</div>
+      <h2 class="svc-title">Serviços que geram<br/><em>resultado real</em></h2>
+    </div>
+    <a href="#contato" class="btn-ghost">Ver todos →</a>
+  </div>
+
+  <div class="svc-grid">
+
+    <div class="svc-card highlight">
+      <span class="new-badge">Popular</span>
+      <div class="svc-icon-wrap">🏪</div>
+      <h3>Sites para Marcas & Estabelecimentos</h3>
+      <p>Página profissional para seu restaurante, salão, loja, clínica ou marca pessoal. Design exclusivo, cardápio digital, galeria, mapa e integração com WhatsApp.</p>
+      <div class="svc-tags"><span class="tag">Landing Page</span><span class="tag">Cardápio Digital</span><span class="tag">WhatsApp</span><span class="tag">SEO Local</span></div>
+    </div>
+
+    <div class="svc-card">
+      <div class="svc-icon-wrap">🐍</div>
+      <h3>Automação Python</h3>
+      <p>Elimine tarefas repetitivas. Relatórios automáticos, e-mails em lote, preenchimento de formulários e integração entre sistemas sem esforço.</p>
+      <div class="svc-tags"><span class="tag">Pandas</span><span class="tag">Selenium</span><span class="tag">Cron Jobs</span></div>
+    </div>
+
+    <div class="svc-card">
+      <div class="svc-icon-wrap">🕷️</div>
+      <h3>Web Scraping</h3>
+      <p>Coleta de dados estruturada e em escala. Preços de concorrentes, leads, produtos e qualquer informação pública disponível na web.</p>
+      <div class="svc-tags"><span class="tag">Scrapy</span><span class="tag">Playwright</span><span class="tag">BeautifulSoup</span></div>
+    </div>
+
+    <div class="svc-card">
+      <div class="svc-icon-wrap">⚡</div>
+      <h3>APIs & Backends</h3>
+      <p>APIs REST prontas para produção com autenticação, banco de dados e documentação completa. Integração com qualquer serviço externo.</p>
+      <div class="svc-tags"><span class="tag">FastAPI</span><span class="tag">Django</span><span class="tag">PostgreSQL</span></div>
+    </div>
+
+    <div class="svc-card">
+      <div class="svc-icon-wrap">🤖</div>
+      <h3>Bots & Integrações</h3>
+      <p>Bots para WhatsApp, Telegram e Discord. Conexão com Notion, Google Sheets, Slack, Trello e qualquer serviço com API.</p>
+      <div class="svc-tags"><span class="tag">N8N</span><span class="tag">Webhooks</span><span class="tag">Zapier</span></div>
+    </div>
+
+    <div class="svc-card">
+      <div class="svc-icon-wrap">📊</div>
+      <h3>Dashboards Analytics</h3>
+      <p>Painéis interativos que transformam planilhas e bancos em insights em tempo real para toda a equipe.</p>
+      <div class="svc-tags"><span class="tag">Streamlit</span><span class="tag">Chart.js</span><span class="tag">Grafana</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PORTFOLIO -->
+<hr class="div"/>
+<div class="section fade" id="portfolio">
+  <div class="svc-header">
+    <div>
+      <div class="label">02 — Trabalhos</div>
+      <h2 class="svc-title">Projetos<br/><em>recentes</em></h2>
+    </div>
+  </div>
+
+
+  <div class="port-grid">
+
+    <div class="port-card" onclick="openModal('pizzaria')">
+      <div class="port-thumb" style="background:#1C1810;">🍕<div class="port-overlay">Ver projeto →</div></div>
+      <div class="port-body">
+        <div class="port-cat">Site para Estabelecimento</div>
+        <h3>Pizzaria Dom Vito</h3>
+        <p>Site com cardápio digital, galeria e botão de pedido. 40% mais cliques para o WhatsApp.</p>
+      </div>
+    </div>
+
+    <div class="port-card" onclick="openModal('relatorios')">
+      <div class="port-thumb" style="background:#111A18;">🗂️<div class="port-overlay">Ver projeto →</div></div>
+      <div class="port-body">
+        <div class="port-cat">Automação</div>
+        <h3>Robô de Relatórios</h3>
+        <p>200+ relatórios Excel gerados e enviados automaticamente todos os dias.</p>
+      </div>
+    </div>
+
+    <div class="port-card" onclick="openModal('studio')">
+      <div class="port-thumb" style="background:#181218;">💇<div class="port-overlay">Ver projeto →</div></div>
+      <div class="port-body">
+        <div class="port-cat">Site para Marca</div>
+        <h3>Studio Karol Beleza</h3>
+        <p>Portfolio do salão com galeria, agendamento online e integração ao Instagram.</p>
+      </div>
+    </div>
+
+    <div class="port-card" onclick="openModal('monitor')">
+      <div class="port-thumb" style="background:#111A18;">🛒<div class="port-overlay">Ver projeto →</div></div>
+      <div class="port-body">
+        <div class="port-cat">Web Scraping</div>
+        <h3>Monitor de Preços</h3>
+        <p>Rastreia 5.000 produtos em 12 e-commerces com alertas em tempo real.</p>
+      </div>
+    </div>
+
+    <div class="port-card" onclick="openModal('bot')">
+      <div class="port-thumb" style="background:#181510;">📱<div class="port-overlay">Ver projeto →</div></div>
+      <div class="port-body">
+        <div class="port-cat">Bot / Integração</div>
+        <h3>Bot de Atendimento</h3>
+        <p>Chatbot no WhatsApp que agenda e confirma compromissos via Google Sheets.</p>
+      </div>
+    </div>
+
+    <div class="port-card" onclick="openModal('dashboard')">
+      <div class="port-thumb" style="background:#111A18;">📈<div class="port-overlay">Ver projeto →</div></div>
+      <div class="port-body">
+        <div class="port-cat">Dashboard</div>
+        <h3>Painel de Vendas</h3>
+        <p>KPIs em tempo real integrados ao Notion e BigQuery para equipe de vendas.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- PROCESSO -->
+<hr class="div"/>
+<div class="section fade" id="processo" style="max-width:1000px">
+  <div class="label">03 — Como funciona</div>
+  <h2 class="svc-title" style="margin-top:0.8rem;margin-bottom:0;">Simples,<br/><em>direto ao ponto</em></h2>
+
+  <div class="proc-grid">
+    <div class="proc-card">
+      <div class="proc-n">01</div>
+      <div>
+        <h3>Conversa gratuita</h3>
+        <p>Entendo seu problema e te dou um diagnóstico honesto: o que é possível, quanto tempo leva e quanto vai custar. Sem compromisso.</p>
+      </div>
+    </div>
+    <div class="proc-card">
+      <div class="proc-n">02</div>
+      <div>
+        <h3>Proposta com escopo fixo</h3>
+        <p>Proposta detalhada com prazo e preço fechado. Você sabe exatamente o que vai receber antes de confirmar qualquer coisa.</p>
+      </div>
+    </div>
+    <div class="proc-card">
+      <div class="proc-n">03</div>
+      <div>
+        <h3>Desenvolvimento com atualizações</h3>
+        <p>Trabalho em etapas com atualizações frequentes. Você acompanha o progresso e pode ajustar o caminho antes da entrega final.</p>
+      </div>
+    </div>
+    <div class="proc-card">
+      <div class="proc-n">04</div>
+      <div>
+        <h3>Entrega + 30 dias de suporte</h3>
+        <p>Entrego com documentação e treinamento. Trinta dias de suporte gratuito incluídos para garantir que tudo funciona como prometido.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEPOIMENTOS -->
+<hr class="div"/>
+<div class="section fade" id="depoimentos">
+  <div class="label">04 — Clientes</div>
+  <h2 class="svc-title" style="margin-top:0.8rem;margin-bottom:0;">O que dizem<br/><em>sobre o trabalho</em></h2>
+
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <blockquote>"A automação economiza 3 horas do nosso time todo dia. Retorno sobre investimento em menos de 2 semanas."</blockquote>
+      <div class="testi-author">
+        <div class="testi-avi">MR</div>
+        <div>
+          <div class="testi-name">Marcos R.</div>
+          <div class="testi-role">CEO · E-commerce</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <blockquote>"O site ficou lindo e profissional. Meus clientes elogiam direto e o movimento no salão aumentou depois que ficou no ar."</blockquote>
+      <div class="testi-author">
+
+<!-- CONTATO -->
+<div id="contato">
+  <div class="contact-inner">
+
+    <div class="fade">
+      <div class="label">05 — Contato</div>
+      <h2 class="contact-title">Pronto para<br/><em>começar?</em></h2>
+      <p class="contact-desc">Me conta o que precisa. Respondo em até 24h com análise inicial e próximos passos. Primeira conversa sempre gratuita.</p>
+
+      <div class="cinfo"><span class="cinfo-icon">✉</span> contato@gabrieldev.com.br</div>
+      <div class="cinfo"><span class="cinfo-icon">📱</span> +55 11 941913383</div>
+      <div class="cinfo"><span class="cinfo-icon">💼</span> linkedin.com/in/Gabriel-Dev03</div>
+
+      <div class="avail-box">
+        <div class="avail-lbl">Disponibilidade</div>
+        <div class="avail-main">Aceitando projetos para Abril 2025</div>
+        <div class="avail-sub">2 vagas disponíveis este mês</div>
+      </div>
+    </div>
+
+    <div class="fade" style="transition-delay:0.15s">
+      <form onsubmit="sendForm(event)">
+        <div class="frow">
+          <div class="fgroup">
+            <label class="flabel">Nome</label>
+            <input type="text" class="finput" placeholder="Seu nome" required/>
+          </div>
+          <div class="fgroup">
+            <label class="flabel">Email</label>
+            <input type="email" class="finput" placeholder="seu@email.com" required/>
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <label class="flabel">Tipo de projeto</label>
+          <select class="fselect">
+            <option value="">Selecione...</option>
+            <option>Site para Marca ou Estabelecimento</option>
+            <option>Automação Python</option>
+            <option>Web Scraping</option>
+            <option>API / Backend</option>
+            <option>Bot / Integração</option>
+            <option>Dashboard Analytics</option>
+            <option>Outro</option>
+          </select>
+        </div>
+
+        <div class="fgroup">
+          <label class="flabel">Orçamento estimado</label>
+          <select class="fselect">
+            <option value="">Selecione...</option>
+            <option>Até R$ 1.000</option>
+            <option>R$ 1.000 – R$ 3.000</option>
+            <option>R$ 3.000 – R$ 7.000</option>
+            <option>Acima de R$ 7.000</option>
+          </select>
+        </div>
+
+        <div class="fgroup">
+          <label class="flabel">Descreva o projeto</label>
+          <textarea class="ftextarea" placeholder="O que precisa? Qual problema quer resolver? Como é feito hoje manualmente?" required></textarea>
+        </div>
+
+        <button type="submit" class="btn-send">Enviar mensagem →</button>
+        <div id="fSuccess">✓ Mensagem enviada! Responderei em até 24 horas.</div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="foot-logo">DevAuto<sup style="font-size:0.5em;color:var(--gold)">®</sup></span>
+  <p>© 2025 · Automação Python & Desenvolvimento Web</p>
+  <div class="foot-links">
+    <a href="https://github.com/Gabriel-Dev03" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/Gabriel-Dev03" target="_blank">LinkedIn</a>
+    <a href="https://www.instagram.com/Gabriel-Dev03" target="_blank">Instagram</a>
+  </div>
+</footer>
+
+<!-- ===== MODAIS DOS PROJETOS ===== -->
+
+<!-- MODAL: Pizzaria Dom Vito -->
+<div class="modal-backdrop" id="modal-pizzaria" onclick="closeOnBackdrop(event, 'pizzaria')">
+  <div class="modal-box">
+    <div class="modal-hero" style="background:linear-gradient(135deg,#1C1810,#2A2010);">
+      🍕
+      <button class="modal-close" onclick="closeModal('pizzaria')">✕</button>
+    </div>
+    <div class="modal-content">
+      <div class="modal-cat">Site para Estabelecimento</div>
+      <h2 class="modal-title">Pizzaria Dom Vito</h2>
+      <p class="modal-desc">Site completo para pizzaria artesanal com cardápio digital interativo, galeria de fotos dos pratos, integração direta com WhatsApp para pedidos e mapa do Google Maps embutido. O cliente acessa o site, escolhe a pizza e cai direto no WhatsApp do dono com o pedido já formatado — sem app, sem taxa.</p>
+
+      <div class="modal-metrics">
+        <div class="modal-metric"><div class="modal-metric-n">+40%</div><div class="modal-metric-l">Cliques no WhatsApp</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">5 dias</div><div class="modal-metric-l">Prazo de entrega</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">100%</div><div class="modal-metric-l">Mobile-first</div></div>
+      </div>
+
+      <div class="modal-stack">
+        <div class="modal-stack-title">Tecnologias usadas</div>
+        <div class="modal-tags">
+          <span class="modal-tag">HTML/CSS</span>
+          <span class="modal-tag">JavaScript</span>
+          <span class="modal-tag">Google Maps API</span>
+          <span class="modal-tag">WhatsApp Link API</span>
+          <span class="modal-tag">GitHub Pages</span>
+        </div>
+      </div>
+
+      <div class="modal-features">
+        <div class="modal-features-title">O que foi entregue</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Cardápio digital com categorias, preços e fotos dos pratos</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Botão de pedido que monta mensagem automática no WhatsApp</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Galeria com fotos das pizzas e do ambiente</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Mapa embutido com endereço e horários de funcionamento</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>SEO local para aparecer no Google Maps da região</div>
+      </div>
+
+      <div class="modal-actions">
+        <a class="modal-btn-github" href="https://github.com/Gabriel-Dev03/pizzaria-dom-vito" target="_blank">
+          ⌥ Ver no GitHub
+        </a>
+        <a class="modal-btn-contact" href="#contato" onclick="closeModal('pizzaria')">
+          Quero um site assim →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Robô de Relatórios -->
+<div class="modal-backdrop" id="modal-relatorios" onclick="closeOnBackdrop(event, 'relatorios')">
+  <div class="modal-box">
+    <div class="modal-hero" style="background:linear-gradient(135deg,#111A18,#162420);">
+      🗂️
+      <button class="modal-close" onclick="closeModal('relatorios')">✕</button>
+    </div>
+    <div class="modal-content">
+      <div class="modal-cat">Automação Python</div>
+      <h2 class="modal-title">Robô de Relatórios</h2>
+      <p class="modal-desc">Script Python que roda todo dia às 7h da manhã, lê dados de um banco PostgreSQL, gera mais de 200 arquivos Excel formatados (um por filial) e envia automaticamente por e-mail para cada gestor. Zero intervenção humana — o time acorda com o relatório na caixa de entrada.</p>
+
+      <div class="modal-metrics">
+        <div class="modal-metric"><div class="modal-metric-n">200+</div><div class="modal-metric-l">Relatórios/dia</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">3h</div><div class="modal-metric-l">Economizadas por dia</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">ROI</div><div class="modal-metric-l">em 2 semanas</div></div>
+      </div>
+
+      <div class="modal-stack">
+        <div class="modal-stack-title">Tecnologias usadas</div>
+        <div class="modal-tags">
+          <span class="modal-tag">Python</span>
+          <span class="modal-tag">openpyxl</span>
+          <span class="modal-tag">pandas</span>
+          <span class="modal-tag">smtplib</span>
+          <span class="modal-tag">PostgreSQL</span>
+          <span class="modal-tag">Cron Job</span>
+        </div>
+      </div>
+
+      <div class="modal-features">
+        <div class="modal-features-title">O que foi entregue</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Leitura automática do banco de dados com queries parametrizadas</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Geração de Excel por filial com formatação, gráficos e tabelas dinâmicas</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Envio de e-mail automático com anexo para cada gestor</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Log de erros e alerta se algum relatório falhar</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Agendamento via Cron Job — roda todo dia sem intervenção</div>
+      </div>
+
+      <div class="modal-actions">
+        <a class="modal-btn-github" href="https://github.com/Gabriel-Dev03/robo-relatorios" target="_blank">
+          ⌥ Ver no GitHub
+        </a>
+        <a class="modal-btn-contact" href="#contato" onclick="closeModal('relatorios')">
+          Quero automatizar isso →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Studio Karol -->
+<div class="modal-backdrop" id="modal-studio" onclick="closeOnBackdrop(event, 'studio')">
+  <div class="modal-box">
+    <div class="modal-hero" style="background:linear-gradient(135deg,#181218,#201520);">
+      💇
+      <button class="modal-close" onclick="closeModal('studio')">✕</button>
+    </div>
+    <div class="modal-content">
+      <div class="modal-cat">Site para Marca</div>
+      <h2 class="modal-title">Studio Karol Beleza</h2>
+      <p class="modal-desc">Portfolio digital para salão de beleza com galeria de trabalhos, sistema de agendamento online integrado ao Google Agenda e feed do Instagram atualizado automaticamente. A cliente deixou de perder agendamentos por WhatsApp e passou a ter uma presença profissional que reflete a qualidade do trabalho dela.</p>
+
+      <div class="modal-metrics">
+        <div class="modal-metric"><div class="modal-metric-n">+60%</div><div class="modal-metric-l">Agendamentos online</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">5★</div><div class="modal-metric-l">Avaliação do cliente</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">7 dias</div><div class="modal-metric-l">Prazo de entrega</div></div>
+      </div>
+
+      <div class="modal-stack">
+        <div class="modal-stack-title">Tecnologias usadas</div>
+        <div class="modal-tags">
+          <span class="modal-tag">HTML/CSS</span>
+          <span class="modal-tag">JavaScript</span>
+          <span class="modal-tag">Google Calendar API</span>
+          <span class="modal-tag">Instagram API</span>
+          <span class="modal-tag">GitHub Pages</span>
+        </div>
+      </div>
+
+      <div class="modal-features">
+        <div class="modal-features-title">O que foi entregue</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Galeria de trabalhos organizadas por categoria (corte, coloração, tratamento)</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Agendamento online com sincronização automática no Google Agenda</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Feed do Instagram embutido e atualizado em tempo real</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Página de serviços e tabela de preços</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Design responsivo e otimizado para Instagram e Google</div>
+      </div>
+
+      <div class="modal-actions">
+        <a class="modal-btn-github" href="https://github.com/Gabriel-Dev03/studio-karol" target="_blank">
+          ⌥ Ver no GitHub
+        </a>
+        <a class="modal-btn-contact" href="#contato" onclick="closeModal('studio')">
+          Quero um site assim →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Monitor de Preços -->
+<div class="modal-backdrop" id="modal-monitor" onclick="closeOnBackdrop(event, 'monitor')">
+  <div class="modal-box">
+    <div class="modal-hero" style="background:linear-gradient(135deg,#111A18,#0F1A14);">
+      🛒
+      <button class="modal-close" onclick="closeModal('monitor')">✕</button>
+    </div>
+    <div class="modal-content">
+      <div class="modal-cat">Web Scraping</div>
+      <h2 class="modal-title">Monitor de Preços</h2>
+      <p class="modal-desc">Sistema de monitoramento que rastreia mais de 5.000 produtos em 12 e-commerces brasileiros (Mercado Livre, Amazon, Shopee e outros). Quando o preço de qualquer produto cai abaixo do limite definido, o sistema dispara um alerta instantâneo por WhatsApp e e-mail. Dados salvos em banco para análise histórica de variação de preço.</p>
+
+      <div class="modal-metrics">
+        <div class="modal-metric"><div class="modal-metric-n">5.000+</div><div class="modal-metric-l">Produtos monitorados</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">12</div><div class="modal-metric-l">E-commerces</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">&lt;1min</div><div class="modal-metric-l">Tempo de alerta</div></div>
+      </div>
+
+      <div class="modal-stack">
+        <div class="modal-stack-title">Tecnologias usadas</div>
+        <div class="modal-tags">
+          <span class="modal-tag">Python</span>
+          <span class="modal-tag">Playwright</span>
+          <span class="modal-tag">BeautifulSoup</span>
+          <span class="modal-tag">SQLite</span>
+          <span class="modal-tag">Twilio API</span>
+          <span class="modal-tag">Cron Job</span>
+        </div>
+      </div>
+
+      <div class="modal-features">
+        <div class="modal-features-title">O que foi entregue</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Scraper resiliente com rotação de user-agent para evitar bloqueios</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Banco de dados com histórico de preços e gráficos de variação</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Alerta em tempo real via WhatsApp (Twilio) e e-mail</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Dashboard simples para visualizar os produtos monitorados</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Suporte a paginação e carregamento dinâmico (JavaScript)</div>
+      </div>
+
+      <div class="modal-actions">
+        <a class="modal-btn-github" href="https://github.com/Gabriel-Dev03/monitor-precos" target="_blank">
+          ⌥ Ver no GitHub
+        </a>
+        <a class="modal-btn-contact" href="#contato" onclick="closeModal('monitor')">
+          Quero esse sistema →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Bot de Atendimento -->
+<div class="modal-backdrop" id="modal-bot" onclick="closeOnBackdrop(event, 'bot')">
+  <div class="modal-box">
+    <div class="modal-hero" style="background:linear-gradient(135deg,#181510,#201A0E);">
+      📱
+      <button class="modal-close" onclick="closeModal('bot')">✕</button>
+    </div>
+    <div class="modal-content">
+      <div class="modal-cat">Bot / Integração</div>
+      <h2 class="modal-title">Bot de Atendimento</h2>
+      <p class="modal-desc">Chatbot no WhatsApp que responde automaticamente, coleta informações do cliente, verifica disponibilidade em tempo real no Google Sheets e confirma o agendamento — tudo sem o dono precisar responder. Funciona 24h por dia, 7 dias por semana. O dono acorda com a agenda do dia já preenchida.</p>
+
+      <div class="modal-metrics">
+        <div class="modal-metric"><div class="modal-metric-n">24/7</div><div class="modal-metric-l">Disponível sempre</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">-80%</div><div class="modal-metric-l">Mensagens manuais</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">0</div><div class="modal-metric-l">Agendamentos perdidos</div></div>
+      </div>
+
+      <div class="modal-stack">
+        <div class="modal-stack-title">Tecnologias usadas</div>
+        <div class="modal-tags">
+          <span class="modal-tag">Python</span>
+          <span class="modal-tag">Evolution API</span>
+          <span class="modal-tag">Google Sheets API</span>
+          <span class="modal-tag">FastAPI</span>
+          <span class="modal-tag">Webhook</span>
+          <span class="modal-tag">Railway</span>
+        </div>
+      </div>
+
+      <div class="modal-features">
+        <div class="modal-features-title">O que foi entregue</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Bot que guia o cliente por um menu de opções no WhatsApp</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Consulta de horários disponíveis em tempo real na planilha</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Confirmação automática com nome, horário e serviço escolhido</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Lembrete automático 1h antes do compromisso</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Painel no Google Sheets com todos os agendamentos do dia</div>
+      </div>
+
+      <div class="modal-actions">
+        <a class="modal-btn-github" href="https://github.com/Gabriel-Dev03/bot-agendamento-whatsapp" target="_blank">
+          ⌥ Ver no GitHub
+        </a>
+        <a class="modal-btn-contact" href="#contato" onclick="closeModal('bot')">
+          Quero esse bot →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Painel de Vendas -->
+<div class="modal-backdrop" id="modal-dashboard" onclick="closeOnBackdrop(event, 'dashboard')">
+  <div class="modal-box">
+    <div class="modal-hero" style="background:linear-gradient(135deg,#111A18,#0D1A22);">
+      📈
+      <button class="modal-close" onclick="closeModal('dashboard')">✕</button>
+    </div>
+    <div class="modal-content">
+      <div class="modal-cat">Dashboard Analytics</div>
+      <h2 class="modal-title">Painel de Vendas</h2>
+      <p class="modal-desc">Dashboard interativo que consolida dados de vendas de múltiplas fontes (Notion, Google Sheets e BigQuery) em um único painel visual, atualizado em tempo real. A equipe de vendas parou de pedir relatório para o financeiro e passou a ter autonomia total sobre os próprios números.</p>
+
+      <div class="modal-metrics">
+        <div class="modal-metric"><div class="modal-metric-n">Real-time</div><div class="modal-metric-l">Atualização dos dados</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">3</div><div class="modal-metric-l">Fontes integradas</div></div>
+        <div class="modal-metric"><div class="modal-metric-n">-100%</div><div class="modal-metric-l">Relatórios manuais</div></div>
+      </div>
+
+      <div class="modal-stack">
+        <div class="modal-stack-title">Tecnologias usadas</div>
+        <div class="modal-tags">
+          <span class="modal-tag">Python</span>
+          <span class="modal-tag">Streamlit</span>
+          <span class="modal-tag">Notion API</span>
+          <span class="modal-tag">BigQuery</span>
+          <span class="modal-tag">Google Sheets API</span>
+          <span class="modal-tag">Plotly</span>
+        </div>
+      </div>
+
+      <div class="modal-features">
+        <div class="modal-features-title">O que foi entregue</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>KPIs principais em cards: faturamento, ticket médio, conversão e meta</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Gráfico de evolução de vendas por semana e mês com comparativo</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Ranking de vendedores atualizado em tempo real</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Filtros por período, produto, canal e vendedor</div>
+        <div class="modal-feature-item"><div class="modal-feature-dot"></div>Hospedagem no Streamlit Cloud — acessa pelo navegador, sem instalar nada</div>
+      </div>
+
+      <div class="modal-actions">
+        <a class="modal-btn-github" href="https://github.com/Gabriel-Dev03/painel-vendas" target="_blank">
+          ⌥ Ver no GitHub
+        </a>
+        <a class="modal-btn-contact" href="#contato" onclick="closeModal('dashboard')">
+          Quero esse painel →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+  // Navbar scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 30));
+
+  // Fade observer
+  const obs = new IntersectionObserver(
+    es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+
+  // Form
+  function sendForm(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.btn-send');
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
+    setTimeout(() => {
+      document.getElementById('fSuccess').style.display = 'block';
+      btn.textContent = 'Enviar mensagem →';
+      btn.disabled = false;
+      e.target.reset();
+    }, 1200);
+  }
+
+  // Modal functions
+  function openModal(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById('modal-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeOnBackdrop(event, id) {
+    if (event.target === event.currentTarget) closeModal(id);
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-backdrop.open').forEach(m => {
+        m.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
